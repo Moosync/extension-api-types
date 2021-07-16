@@ -1,0 +1,26 @@
+{
+  "name": "@moosync/moosync-types",
+  "version": "1.0.0",
+  "description": "Declarations for moosync extensions",
+  "main": "",
+  "types": "index.d.ts",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Ovenoboyo/moosync-types.git"
+  },
+  "keywords": [
+    "moosync"
+  ],
+  "author": "Sahil Gupte",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/Ovenoboyo/moosync-types/issues"
+  },
+  "homepage": "https://github.com/Ovenoboyo/moosync-types#readme",
+  "dependencies": {
+    "@types/node": "^16.3.2"
+  }
+}

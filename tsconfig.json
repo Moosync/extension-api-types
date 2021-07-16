@@ -1,0 +1,11 @@
+{
+    "files": ["index.d.ts", "models.d.ts"],
+    "compilerOptions": {
+        "typeRoots": [
+            "./node_modules/@types"
+        ],
+    },
+    "include": [
+        "types/*.d.ts", "models.d.ts", "index.d.ts",
+    ],
+}
