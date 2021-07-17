@@ -1,5 +1,6 @@
 import { Song } from "./models";
 
+export const EXTENSION_ENTRY_POINT = 'moosync_extension_entry'
 export interface ExtensionData {
     extensionDescriptors: ExtensionDescriptor[]
 }
@@ -17,7 +18,8 @@ export interface ExtensionFactory {
 }
 
 export interface MoosyncExtensionTemplate {
-    onSongChanged(song: Song)
+    onStarted?(): void
+    onSongChanged?(song: Song): void
 }
 
 export interface ExtensionItem {
@@ -25,8 +27,4 @@ export interface ExtensionItem {
     name: string
     desc: string
     instance: MoosyncExtensionTemplate
-}
-
-export interface global {
-    getAllSongs(): Promise<Song[]>
 }
