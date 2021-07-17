@@ -1,4 +1,4 @@
-import { Song } from "./models";
+import { Song, SongQueue, PlayerState } from "./models";
 
 export const EXTENSION_ENTRY_POINT = 'moosync_extension_entry'
 export interface ExtensionData {
@@ -20,6 +20,9 @@ export interface ExtensionFactory {
 export interface MoosyncExtensionTemplate {
     onStarted?(): void
     onSongChanged?(song: Song): void
+    onPlayerStateChanged?(state: PlayerState): void
+    onVolumeChanged?(state: number): void
+    onSongQueueChanged?(queue: SongQueue): void
 }
 
 export interface ExtensionItem {

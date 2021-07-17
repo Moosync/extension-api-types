@@ -55,4 +55,10 @@ export interface Song {
   type: 'LOCAL' | 'YOUTUBE' | 'SPOTIFY'
 }
 
+export type PlayerState = 'PLAYING' | 'PAUSED' | 'STOPPED' | 'LOADING'
 
+export interface SongQueue {
+  data: { [id: string]: Song }
+  order: { id: string, songID: string }[]
+  index: number
+}
