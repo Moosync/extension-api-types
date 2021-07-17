@@ -55,17 +55,4 @@ export interface Song {
   type: 'LOCAL' | 'YOUTUBE' | 'SPOTIFY'
 }
 
-interface stats {
-  path: string
-  size: number
-  inode: string
-  deviceno: string
-  hash?: string
-}
-
-interface image {
-  path: string
-  data: Buffer
-}
-
 
