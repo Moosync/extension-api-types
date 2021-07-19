@@ -2,14 +2,7 @@ import { Song, SongQueue, PlayerState } from "./models";
 
 export const EXTENSION_ENTRY_POINT = 'moosync_extension_entry'
 export interface ExtensionData {
-    extensionDescriptors: ExtensionDescriptor[]
-}
-
-export interface ExtensionDescriptor {
-    extensionName: string
-    extensionDescription: string
-    extensionPointId: string,
-    factory: ExtensionFactory,
+    extensionDescriptors: ExtensionFactory[]
 }
 
 export interface ExtensionFactory {
@@ -25,9 +18,4 @@ export interface MoosyncExtensionTemplate {
     onSongQueueChanged?(queue: SongQueue): void
 }
 
-export interface ExtensionItem {
-    id: string
-    name: string
-    desc: string
-    instance: MoosyncExtensionTemplate
-}
+declare function getAllSongs(): Promise<Song>
