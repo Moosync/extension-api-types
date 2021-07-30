@@ -1,6 +1,6 @@
 {
   "name": "@moosync/moosync-types",
-  "version": "1.0.6",
+  "version": "1.1.1",
   "description": "Declarations for moosync extensions",
   "main": "",
   "types": "index.d.ts",
@@ -19,5 +19,8 @@
   "bugs": {
     "url": "https://github.com/Ovenoboyo/moosync-types/issues"
   },
-  "homepage": "https://github.com/Ovenoboyo/moosync-types#readme"
+  "homepage": "https://github.com/Ovenoboyo/moosync-types#readme",
+  "devDependencies": {
+    "winston": "^3.3.3"
+  }
 }
