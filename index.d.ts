@@ -1,7 +1,4 @@
-import { Logger } from "winston";
-import { Song, SongQueue, PlayerState } from "./models";
-
-export type logger = Logger
+import { Song, SongQueue, PlayerState, Genre, Album, artists, Playlist, SearchableSong } from "./models";
 
 export const EXTENSION_ENTRY_POINT = 'moosync_extension_entry'
 export interface ExtensionData {
@@ -59,8 +56,35 @@ export interface MoosyncExtensionTemplate {
     onPreferenceChanged?({ key, value }: { key: string, value: any }): void
 }
 
+export interface SongAPIOptions {
+    song?: SearchableSong
+    album?: Album
+    artist?: artists
+    genre?: Genre
+    playlist?: Playlist
+    inclusive?: boolean
+}
+
+export type EntityApiOptions = { inclusive?: boolean } & ({
+    album: Album | boolean
+} | {
+    artist: artists | boolean
+} | {
+    genre: Genre | boolean
+} | {
+    playlist: Playlist | boolean
+})
+
+export interface playerControls {
+    play(): Promise<void>
+    pause(): Promise<void>
+    stop(): Promise<void>
+    nextSong(): Promise<void>
+    prevSong(): Promise<void>
+}
+
 export interface extensionAPI {
-    getAllSongs(): Promise<Song[] | undefined>
+    getSongs(options: SongAPIOptions): Promise<Song[] | undefined>
     getCurrentSong(): Promise<Song | undefined>
     getPlayerState(): Promise<PlayerState | undefined>
     getVolume(): Promise<number | undefined>
@@ -68,4 +92,5 @@ export interface extensionAPI {
     getQueue(): Promise<SongQueue | undefined>
     getPreferences(key?: string, defaultValue?: any): Promise<any>
     setPreferences(key: string, value: any): Promise<void>
+    player: playerControls
 }

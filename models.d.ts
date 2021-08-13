@@ -8,7 +8,7 @@ export interface Album {
 }
 
 export interface artists {
-  artist_id: string
+  artist_id?: string
   artist_name?: string
   artist_mbid?: string
   artist_coverPath?: string
@@ -16,22 +16,22 @@ export interface artists {
 }
 
 export interface Genre {
-  genre_id: string
-  genre_name: string
-  genre_song_count: number
+  genre_id?: string
+  genre_name?: string
+  genre_song_count?: number
 }
 
 export interface Playlist {
-  playlist_id: string
-  playlist_name: string
-  playlist_coverPath: string | undefined
+  playlist_id?: string
+  playlist_name?: string
+  playlist_coverPath?: string
   playlist_songs?: Song[]
-  playlist_song_count: number
+  playlist_song_count?: number
 }
 
 
 export interface Song {
-  _id?: string
+  _id: string
   path?: string
   size?: number
   title: string
@@ -52,7 +52,17 @@ export interface Song {
   inode?: string
   deviceno?: string
   url?: string
+  playbackUrl?: string
   type: 'LOCAL' | 'YOUTUBE' | 'SPOTIFY'
+}
+
+export interface SearchableSong {
+  _id?: string
+  path?: string
+  title?: string
+  url?: string
+  playbackUrl?: string
+  type?: 'LOCAL' | 'YOUTUBE' | 'SPOTIFY'
 }
 
 export type PlayerState = 'PLAYING' | 'PAUSED' | 'STOPPED' | 'LOADING'
