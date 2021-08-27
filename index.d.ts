@@ -64,7 +64,7 @@ export interface SongAPIOptions {
     artist?: artists
     genre?: Genre
     playlist?: Playlist
-    sortBy: sortOptions
+    sortBy?: sortOptions
     inclusive?: boolean
 }
 
