@@ -56,12 +56,15 @@ export interface MoosyncExtensionTemplate {
     onPreferenceChanged?({ key, value }: { key: string, value: any }): void
 }
 
+export type sortOptions = { type: 'name' | 'date', asc: boolean }
+
 export interface SongAPIOptions {
     song?: SearchableSong
     album?: Album
     artist?: artists
     genre?: Genre
     playlist?: Playlist
+    sortBy: sortOptions
     inclusive?: boolean
 }
 
