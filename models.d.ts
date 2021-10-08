@@ -67,8 +67,23 @@ export interface SearchableSong {
 
 export type PlayerState = 'PLAYING' | 'PAUSED' | 'STOPPED' | 'LOADING'
 
+/**
+ * Interface representing Queue of tracks
+ */
 export interface SongQueue {
+  /**
+   * Data is a dictionary with unique songs. Song here won't be repeated
+   */
   data: { [id: string]: Song }
+
+  /**
+   * Order is an array with songID corresponding to {@link SongQueue#data}
+   * Items may be repeated
+   */
   order: { id: string, songID: string }[]
+
+  /**
+   * Index of current playing song from {@link SongQueue#order}
+   */
   index: number
 }
