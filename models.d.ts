@@ -61,7 +61,11 @@ export interface SearchableSong {
   path?: string
   title?: string
   url?: string
-  playbackUrl?: string
+  playbackUrl?: string,
+
+  // MD5 hash
+  hash?: string
+
   type?: 'LOCAL' | 'YOUTUBE' | 'SPOTIFY'
 }
 
