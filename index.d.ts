@@ -51,48 +51,53 @@ export interface MoosyncExtensionTemplate {
     /**
      * Method fired when the extension is started
      */
-    onStarted?(): void
+    onStarted?(): Promise<void>
 
     /**
      * Method fired when the extension is stopped
      */
-    onStopped?(): void
+    onStopped?(): Promise<void>
 
     /**
      * Method fired when current playing track is changed
      * @param song song which is current playing after change
      */
-    onSongChanged?(song: Song): void
+    onSongChanged?(song: Song): Promise<void>
+
 
     /**
      * Method fired when player state changes 
      * @param state player state after change
      */
-    onPlayerStateChanged?(state: PlayerState): void
+    onPlayerStateChanged?(state: PlayerState): Promise<void>
+
 
     /**
      * Method fired when volume changes
      * @param volume volume after change
      */
-    onVolumeChanged?(volume: number): void
+    onVolumeChanged?(volume: number): Promise<void>
+
 
     /**
      * Method fired when user manually seeks track
      * @param time time to which the track was seeked
      */
-    onSeeked?(time: number): void
+    onSeeked?(time: number): Promise<void>
+
 
     /**
      * Method fired when song queue changes.
      * @param queue 
      */
-    onSongQueueChanged?(queue: SongQueue): void
+    onSongQueueChanged?(queue: SongQueue): Promise<void>
+
 
     /**
      * Method fired when preferences corresponding to current extension changes
      * @param param0 can be destructured into key and value which corresponds to changed preference
      */
-    onPreferenceChanged?({ key, value }: { key: string, value: any }): void
+    onPreferenceChanged?({ key, value }: { key: string, value: any }): Promise<void>
 }
 
 /**
