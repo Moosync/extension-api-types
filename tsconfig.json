@@ -1,11 +1,17 @@
 {
-    "files": ["index.d.ts", "models.d.ts"],
+    "files": [
+        "index.d.ts",
+        "models.d.ts",
+        "extension.d.ts"
+    ],
     "compilerOptions": {
         "typeRoots": [
             "./node_modules/@types"
         ],
     },
     "include": [
-        "types/*.d.ts", "models.d.ts", "index.d.ts",
+        "extension.d.ts",
+        "models.d.ts",
+        "index.d.ts",
     ],
 }
