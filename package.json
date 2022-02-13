@@ -1,11 +1,12 @@
 {
   "name": "@moosync/moosync-types",
-  "version": "1.2.0",
+  "version": "1.2.1",
   "description": "Declarations for moosync extensions",
   "main": "",
   "types": "index.d.ts",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "docs": "yarn typedoc index.d.ts models.d.ts"
   },
   "repository": {
     "type": "git",

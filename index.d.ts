@@ -1,4 +1,4 @@
-import { Song, SongQueue, PlayerState, Genre, Album, artists, Playlist, SearchableSong } from "./models";
+import { Song, SongQueue, PlayerState, Genre, Album, Artists, Playlist, SearchableSong } from "./models";
 
 export const EXTENSION_ENTRY_POINT = 'moosync_extension_entry'
 export interface ExtensionData {
@@ -126,7 +126,7 @@ export interface SongAPIOptions {
     /**
      * To search tracks by properties in artists, specify this property.
      */
-    artist?: artists
+    artist?: Artists
 
     /**
      * To search tracks by properties in genre, specify this property.
@@ -180,7 +180,7 @@ export type EntityApiOptions = {
 } & ({
     album: Album | boolean
 } | {
-    artist: artists | boolean
+    artist: Artists | boolean
 } | {
     genre: Genre | boolean
 } | {

@@ -1,14 +1,15 @@
 export interface Album {
   album_id?: string
   album_name?: string
-  album_coverPath?: string
+  album_coverPath_high?: string
+  album_coverPath_low?: string
   album_song_count?: number
   album_artist?: string
   year?: number
 }
 
-export interface artists {
-  artist_id?: string
+export interface Artists {
+  artist_id: string
   artist_name?: string
   artist_mbid?: string
   artist_coverPath?: string
@@ -16,17 +17,18 @@ export interface artists {
 }
 
 export interface Genre {
-  genre_id?: string
-  genre_name?: string
-  genre_song_count?: number
+  genre_id: string
+  genre_name: string
+  genre_song_count: number
 }
 
 export interface Playlist {
-  playlist_id?: string
-  playlist_name?: string
-  playlist_coverPath?: string
+  playlist_id: string
+  playlist_name: string
+  playlist_coverPath: string | undefined
   playlist_songs?: Song[]
   playlist_song_count?: number
+  isRemote?: boolean
 }
 
 
@@ -35,7 +37,8 @@ export interface Song {
   path?: string
   size?: number
   title: string
-  song_coverPath?: string
+  song_coverPath_low?: string
+  song_coverPath_high?: string
   album?: Album
   artists?: string[]
   date?: string
@@ -53,6 +56,7 @@ export interface Song {
   deviceno?: string
   url?: string
   playbackUrl?: string
+  date_added: number
   type: 'LOCAL' | 'YOUTUBE' | 'SPOTIFY'
 }
 
