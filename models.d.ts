@@ -1,4 +1,4 @@
-interface Album {
+export interface Album {
   album_id?: string
   album_name?: string
   album_coverPath_high?: string
@@ -8,7 +8,7 @@ interface Album {
   year?: number
 }
 
-interface Artists {
+export interface Artists {
   artist_id: string
   artist_name?: string
   artist_mbid?: string
@@ -16,13 +16,13 @@ interface Artists {
   artist_song_count?: number
 }
 
-interface Genre {
+export interface Genre {
   genre_id: string
   genre_name: string
   genre_song_count: number
 }
 
-interface Playlist {
+export interface Playlist {
   playlist_id: string
   playlist_name: string
   playlist_coverPath: string | undefined
@@ -32,7 +32,7 @@ interface Playlist {
 }
 
 
-interface Song {
+export interface Song {
   _id: string
   path?: string
   size?: number
@@ -60,7 +60,7 @@ interface Song {
   type: 'LOCAL' | 'YOUTUBE' | 'SPOTIFY'
 }
 
-interface SearchableSong {
+export interface SearchableSong {
   _id?: string
   path?: string
   title?: string
@@ -73,12 +73,12 @@ interface SearchableSong {
   type?: 'LOCAL' | 'YOUTUBE' | 'SPOTIFY'
 }
 
-type PlayerState = 'PLAYING' | 'PAUSED' | 'STOPPED' | 'LOADING'
+export type PlayerState = 'PLAYING' | 'PAUSED' | 'STOPPED' | 'LOADING'
 
 /**
  * Interface representing Queue of tracks
  */
-interface SongQueue {
+export interface SongQueue {
   /**
    * Data is a dictionary with unique songs. Song here won't be repeated
    */

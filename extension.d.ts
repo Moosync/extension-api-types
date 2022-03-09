@@ -1,19 +1,21 @@
-interface ExtensionData {
+import { Song, PlayerState, SongQueue, SearchableSong, Album, Artists, Genre, Playlist } from "./models"
+
+export interface ExtensionData {
     extensionDescriptors: ExtensionFactory[]
 }
 
-interface Checkbox {
+export interface Checkbox {
     key: string
     title: string
     enabled: boolean
 }
 
-interface PathGroup {
+export interface PathGroup {
     path: string
     enabled: boolean
 }
 
-type ExtensionPreferenceGroup = {
+export type ExtensionPreferenceGroup = {
     key: string
     title: string
     description: string
@@ -31,7 +33,7 @@ type ExtensionPreferenceGroup = {
     default: PathGroup[]
 })
 
-interface ExtensionFactory {
+export interface ExtensionFactory {
     // Return an instance of the plugin
     registerPreferences?(): Promise<ExtensionPreferenceGroup[]>
 
@@ -44,7 +46,7 @@ interface ExtensionFactory {
 /**
  * Interface defining Moosync extension lifecycle hooks
  */
-interface MoosyncExtensionTemplate {
+export interface MoosyncExtensionTemplate {
     /**
      * Method fired when the extension is started
      */
@@ -101,7 +103,7 @@ interface MoosyncExtensionTemplate {
  * Sort by name or date. 
  * If asc is true then results will be sorted in ascending otherwise descending
  */
-type sortOptions = { type: 'name' | 'date', asc: boolean }
+export type sortOptions = { type: 'name' | 'date', asc: boolean }
 
 /**
  * Options for searching songs from Database
@@ -109,7 +111,7 @@ type sortOptions = { type: 'name' | 'date', asc: boolean }
  * Eg. if the term is 'aaa', to get all songs containing 'aaa' in the title,
  * put the term as '%aaa%' in 'song.title'. 
  */
-interface SongAPIOptions {
+export interface SongAPIOptions {
     /**
      * To search tracks by properties in song, specify this property.
      */
@@ -159,7 +161,7 @@ interface SongAPIOptions {
  * Options for searching entities like Albums, Artists, Playlists or Genre
  * 
  */
-type EntityApiOptions = {
+export type EntityApiOptions = {
 
     /**
      * If false, then the exact match of all options will be provided.
@@ -187,7 +189,7 @@ type EntityApiOptions = {
 /**
  * Methods to control the audio player in Moosync
  */
-interface playerControls {
+export interface playerControls {
     /**
      * Start playing the loaded track
      */
@@ -214,7 +216,7 @@ interface playerControls {
     prevSong(): Promise<void>
 }
 
-interface extensionAPI {
+export interface extensionAPI {
     /**
      * Get songs from database filtered by provided options
      * @param options filter the results
