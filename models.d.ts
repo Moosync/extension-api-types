@@ -31,6 +31,7 @@ export interface Playlist {
   isRemote?: boolean
 }
 
+export type PlayerTypes = 'LOCAL' | 'YOUTUBE' | 'SPOTIFY' | 'URL'
 
 export interface Song {
   _id: string
@@ -57,7 +58,7 @@ export interface Song {
   url?: string
   playbackUrl?: string
   date_added: number
-  type: 'LOCAL' | 'YOUTUBE' | 'SPOTIFY'
+  type: PlayerTypes
 }
 
 export interface SearchableSong {

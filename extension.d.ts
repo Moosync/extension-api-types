@@ -265,6 +265,13 @@ export interface extensionAPI {
     setPreferences(key: string, value: any): Promise<void>
 
     /**
+     * Add songs to library
+     * @param songs 1 or more songs that are to be added to library
+     * @returns array of booleans with same index as song. True means song has been added successfully
+     */
+    addSongs(...songs: Song[]): Promise<boolean[]>
+
+    /**
      * Object containing controls for player
      */
     player: playerControls
