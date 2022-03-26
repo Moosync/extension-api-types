@@ -272,6 +272,12 @@ export interface extensionAPI {
     addSongs(...songs: Song[]): Promise<boolean[]>
 
     /**
+     * Remove song from library
+     * @param song_id id of song to remove
+     */
+    removeSong(song_id: string): Promise<void>
+
+    /**
      * Object containing controls for player
      */
     player: playerControls
