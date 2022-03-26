@@ -58,6 +58,7 @@ export interface Song {
   url?: string
   playbackUrl?: string
   date_added: number
+  providerExtension?: string
   type: PlayerTypes
 }
 
@@ -72,6 +73,9 @@ export interface SearchableSong {
   hash?: string
 
   type?: 'LOCAL' | 'YOUTUBE' | 'SPOTIFY'
+
+  // Will return all songs provided by this extension
+  extension?: boolean
 }
 
 export type PlayerState = 'PLAYING' | 'PAUSED' | 'STOPPED' | 'LOADING'
