@@ -255,7 +255,7 @@ export interface extensionAPI {
      * @param key key of preference to fetch. keys within complex objects can be separated by .
      * @param defaultValue If the provided key is not found, then default value will be returned.
      */
-    getPreferences<T>(key?: string, defaultValue?: any): Promise<T>
+    getPreferences<T>(key?: string, defaultValue?: any): Promise<T | undefined>
 
     /**
      * Set preference by key.
