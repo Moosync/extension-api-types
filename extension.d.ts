@@ -235,22 +235,24 @@ export interface playerControls {
   prevSong(): Promise<void>
 }
 
-export type ExtraExtensionEventTypes = "get-playlists"
-
-export interface ExtraExtensionEvents {
-  type: ExtraExtensionEventTypes
-  data: ExtraExtensionEventData<ExtraExtensionEvents["type"]>
-}
+export type ExtraExtensionEventTypes = "get-playlists" | "get-playlist-songs"
 
 export type GetPlaylistReturnType = {
   playlists: Playlist[]
 }
 
-export type ExtraExtensionEventData<T extends ExtraExtensionEventTypes> =
-  T extends "get-playlists" ? [] : []
+export type GetPlaylistSongsReturnType = {
+  songs: Song[]
+}
+
+export type ExtraExtensionEventData<T extends ExtraExtensionEventTypes> = []
 
 export type ExtraExtensionEventReturnType<T extends ExtraExtensionEventTypes> =
-  T extends "get-playlists" ? GetPlaylistReturnType : undefined
+  T extends "get-playlists"
+    ? GetPlaylistReturnType
+    : T extends "get-playlist-songs"
+    ? GetPlaylistSongsReturnType
+    : undefined
 
 export interface extensionAPI {
   /**
@@ -318,11 +320,11 @@ export interface extensionAPI {
    * @param eventName Name of event
    * @param callback Callback fired when event is emitted
    */
-  on(
-    eventName: ExtraExtensionEvents["type"],
+  on<T extends ExtraExtensionEventTypes>(
+    eventName: T,
     callback: (
-      ...args: ExtraExtensionEvents["data"]
-    ) => Promise<ExtraExtensionEventReturnType<typeof eventName>>
+      ...args: ExtraExtensionEventData<T>
+    ) => Promise<ExtraExtensionEventReturnType<T>>
   ): void
 
   /**
