@@ -316,6 +316,20 @@ export interface extensionAPI {
   removeSong(song_id: string): Promise<void>
 
   /**
+   * Add playlist to library
+   * @param playlist details of playlist which is to be added to library
+   * @returns ID of playlist which has been added
+   */
+  addPlaylist(playlist: Omit<Playlist, "playlist_id">): Promise<string>
+
+  /**
+   * Add songs to playlist in library. The song must also exist in the library
+   * @param playlistID ID of playlist in which songs are to be added
+   * @param songs Songs which are to be added in the playlist
+   */
+  addSongsToPlaylist(playlistID: string, ...songs: Song[]): Promise<void>
+
+  /**
    * Register extra events callbacks
    * @param eventName Name of event
    * @param callback Callback fired when event is emitted
