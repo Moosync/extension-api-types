@@ -235,9 +235,8 @@ export interface playerControls {
   prevSong(): Promise<void>
 }
 
-export enum ExtraExtensionEventTypes {
-  GET_PLAYLISTS = "get-playlists",
-}
+export type ExtraExtensionEventTypes = "get-playlists"
+
 export interface ExtraExtensionEvents {
   type: ExtraExtensionEventTypes
   data: ExtraExtensionEventData<ExtraExtensionEvents["type"]>
@@ -248,12 +247,10 @@ export type GetPlaylistReturnType = {
 }
 
 export type ExtraExtensionEventData<T extends ExtraExtensionEventTypes> =
-  T extends ExtraExtensionEventTypes.GET_PLAYLISTS ? [] : []
+  T extends "get-playlists" ? [] : []
 
 export type ExtraExtensionEventReturnType<T extends ExtraExtensionEventTypes> =
-  T extends ExtraExtensionEventTypes.GET_PLAYLISTS
-    ? GetPlaylistReturnType
-    : undefined
+  T extends "get-playlists" ? GetPlaylistReturnType : undefined
 
 export interface extensionAPI {
   /**
