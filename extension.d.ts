@@ -317,6 +317,18 @@ export interface extensionAPI {
   removeSong(song_id: string): Promise<void>
 
   /**
+   * Register extra events callbacks
+   * @param eventName Name of event
+   * @param callback Callback fired when event is emitted
+   */
+  on(
+    eventName: ExtraExtensionEvents["type"],
+    callback: (
+      ...args: ExtraExtensionEvents["data"]
+    ) => Promise<ExtraExtensionEventReturnType<typeof eventName>>
+  ): void
+
+  /**
    * Object containing controls for player
    */
   player: playerControls
