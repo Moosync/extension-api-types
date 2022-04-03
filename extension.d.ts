@@ -238,9 +238,9 @@ export interface playerControls {
 export enum ExtraExtensionEventTypes {
   GET_PLAYLISTS = "get-playlists",
 }
-export interface ExtraExtensionEvents<T extends ExtraExtensionEventTypes> {
-  type: T
-  data: ExtraExtensionEventData<T>
+export interface ExtraExtensionEvents {
+  type: ExtraExtensionEventTypes
+  data: ExtraExtensionEventData<ExtraExtensionEvents["type"]>
 }
 
 export type GetPlaylistReturnType = {
@@ -254,12 +254,6 @@ export type ExtraExtensionEventReturnType<T extends ExtraExtensionEventTypes> =
   T extends ExtraExtensionEventTypes.GET_PLAYLISTS
     ? GetPlaylistReturnType
     : undefined
-
-export type ExtraExtensionEventCombinedReturnType<
-  T extends ExtraExtensionEventTypes
-> = {
-  [key: string]: ExtraExtensionEventReturnType<T>
-}
 
 export interface extensionAPI {
   /**
