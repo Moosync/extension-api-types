@@ -24,6 +24,12 @@ export interface PathGroup {
   enabled: boolean
 }
 
+export interface Buttons {
+  key: string
+  title: string
+  lastClicked: number
+}
+
 export type ExtensionPreferenceGroup = {
   key: string
   title: string
@@ -44,6 +50,14 @@ export type ExtensionPreferenceGroup = {
   | {
       type: "DirectoryGroup"
       default: PathGroup[]
+    }
+  | {
+      type: "ButtonGroup"
+      items: Buttons[]
+    }
+  | {
+      type: "ProgressBar"
+      default: number
     }
 )
 
