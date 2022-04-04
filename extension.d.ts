@@ -256,7 +256,7 @@ export type ExtraExtensionEventReturnType<T extends ExtraExtensionEventTypes> =
     ? GetPlaylistReturnType
     : T extends "get-playlist-songs"
     ? GetPlaylistSongsReturnType
-    : undefined
+    : void
 
 export interface extensionAPI {
   /**
