@@ -235,7 +235,10 @@ export interface playerControls {
   prevSong(): Promise<void>
 }
 
-export type ExtraExtensionEventTypes = "get-playlists" | "get-playlist-songs"
+export type ExtraExtensionEventTypes =
+  | "get-playlists"
+  | "get-playlist-songs"
+  | "on-oauth"
 
 export type GetPlaylistReturnType = {
   playlists: Playlist[]
@@ -245,7 +248,8 @@ export type GetPlaylistSongsReturnType = {
   songs: Song[]
 }
 
-export type ExtraExtensionEventData<T extends ExtraExtensionEventTypes> = []
+export type ExtraExtensionEventData<T extends ExtraExtensionEventTypes> =
+  T extends "on-oauth" ? [string] : []
 
 export type ExtraExtensionEventReturnType<T extends ExtraExtensionEventTypes> =
   T extends "get-playlists"
@@ -328,6 +332,14 @@ export interface extensionAPI {
    * @param songs Songs which are to be added in the playlist
    */
   addSongsToPlaylist(playlistID: string, ...songs: Song[]): Promise<void>
+
+  /**
+   * Register a callback for Oauth on given path. This OAuth can be triggered by calling the url
+   * moosync://{path}
+   * If the path matches, the whole URL is passed to this extension.
+   * @param path path on which the callback will be triggered
+   */
+  registerOAuth(path: string): Promise<void>
 
   /**
    * Register extra events callbacks
