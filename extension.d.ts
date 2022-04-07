@@ -263,7 +263,11 @@ export type GetPlaylistSongsReturnType = {
 }
 
 export type ExtraExtensionEventData<T extends ExtraExtensionEventTypes> =
-  T extends "on-oauth" ? [string] : []
+  T extends "get-playlist-songs"
+    ? [string]
+    : T extends "on-oauth"
+    ? [string]
+    : []
 
 export type ExtraExtensionEventReturnType<T extends ExtraExtensionEventTypes> =
   T extends "get-playlists"
