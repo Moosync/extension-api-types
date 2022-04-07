@@ -41,7 +41,10 @@ export type ExtensionPreferenceGroup = {
     }
   | {
       type: "EditText"
-      inputType?: string
+      /**
+       * Setting inputType to password will store the value as encrypted. It can be retrieved using getSecure
+       */
+      inputType?: "text" | "number" | "password" | "url"
       default: string
     }
   | {
