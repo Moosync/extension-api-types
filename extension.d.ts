@@ -41,7 +41,7 @@ export type ExtensionPreferenceGroup = {
     }
   | {
       type: "EditText"
-      inputType: string
+      inputType?: string
       default: string
     }
   | {
