@@ -326,6 +326,20 @@ export interface extensionAPI {
   setPreferences(key: string, value: any): Promise<void>
 
   /**
+   * Get decrypted value of an encrypted preference
+   * @param key key of preference to fetch. keys within complex objects can be separated by .
+   * @param defaultValue If the provided key is not found, then default value will be returned.
+   */
+  getSecure<T>(key?: string, defaultValue?: unknown): Promise<T | undefined>
+
+  /**
+   * Encrypt value and store in preferences
+   * @param key key separated by '.'
+   * @param value value to be stored for corresponding key
+   */
+  setSecure(key: string, value: unknown): Promise<void>
+
+  /**
    * Add songs to library
    * @param songs 1 or more songs that are to be added to library
    * @returns array of booleans with same index as song. True means song has been added successfully
