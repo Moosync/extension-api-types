@@ -28,10 +28,11 @@ export interface Playlist {
   playlist_coverPath: string | undefined
   playlist_song_count?: number
   playlist_path?: string
+  icon?: string
   isRemote?: boolean
 }
 
-export type PlayerTypes = 'LOCAL' | 'YOUTUBE' | 'SPOTIFY' | 'URL'
+export type PlayerTypes = "LOCAL" | "YOUTUBE" | "SPOTIFY" | "URL"
 
 export interface Song {
   _id: string
@@ -59,6 +60,7 @@ export interface Song {
   playbackUrl?: string
   date_added: number
   providerExtension?: string
+  icon?: string
   type: PlayerTypes
 }
 
@@ -67,18 +69,18 @@ export interface SearchableSong {
   path?: string
   title?: string
   url?: string
-  playbackUrl?: string,
+  playbackUrl?: string
 
   // MD5 hash
   hash?: string
 
-  type?: 'LOCAL' | 'YOUTUBE' | 'SPOTIFY'
+  type?: "LOCAL" | "YOUTUBE" | "SPOTIFY"
 
   // Will return all songs provided by this extension
   extension?: boolean
 }
 
-export type PlayerState = 'PLAYING' | 'PAUSED' | 'STOPPED' | 'LOADING'
+export type PlayerState = "PLAYING" | "PAUSED" | "STOPPED" | "LOADING"
 
 /**
  * Interface representing Queue of tracks
@@ -93,7 +95,7 @@ export interface SongQueue {
    * Order is an array with songID corresponding to {@link SongQueue#data}
    * Items may be repeated
    */
-  order: { id: string, songID: string }[]
+  order: { id: string; songID: string }[]
 
   /**
    * Index of current playing song from {@link SongQueue#order}
