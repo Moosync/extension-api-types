@@ -136,7 +136,7 @@ export interface MoosyncExtensionTemplate {
  * Sort by key in Song.
  * If asc is true then results will be sorted in ascending otherwise descending
  */
-export type SongSortOptions = keyof Song
+export type SongSortOptions = { type: keyof Song; asc: boolean }
 
 /**
  * Options for searching songs from Database
