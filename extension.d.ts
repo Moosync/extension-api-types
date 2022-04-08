@@ -133,10 +133,10 @@ export interface MoosyncExtensionTemplate {
 }
 
 /**
- * Sort by name or date.
+ * Sort by key in Song.
  * If asc is true then results will be sorted in ascending otherwise descending
  */
-export type sortOptions = { type: "name" | "date"; asc: boolean }
+export type SongSortOptions = keyof Song
 
 /**
  * Options for searching songs from Database
@@ -173,7 +173,7 @@ export interface SongAPIOptions {
   /**
    * To sort the results, specify this property
    */
-  sortBy?: sortOptions
+  sortBy?: SongSortOptions
 
   /**
    * If false, then the exact match of all options will be provided.
