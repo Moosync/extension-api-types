@@ -360,7 +360,7 @@ export interface extensionAPI {
   openExternalURL(url: string): Promise<void>
 
   /**
-   * Register extra events callbacks
+   * Register extra events callbacks. At any time only one callback can be assigned to one event
    * @param eventName Name of event
    * @param callback Callback fired when event is emitted
    */
@@ -370,6 +370,12 @@ export interface extensionAPI {
       ...args: ExtraExtensionEventData<T>
     ) => Promise<ExtraExtensionEventReturnType<T>>
   ): void
+
+  /**
+   * Remove callbacks from extra events
+   * @param eventName name of event whose callback is to be removed
+   */
+  off<T extends ExtraExtensionEventTypes>(eventName: T): void
 
   /**
    * Object containing controls for player
