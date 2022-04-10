@@ -88,48 +88,6 @@ export interface MoosyncExtensionTemplate {
    * Method fired when the extension is stopped
    */
   onStopped?(): Promise<void>
-
-  /**
-   * Method fired when current playing track is changed
-   * @param song song which is current playing after change
-   */
-  onSongChanged?(song: Song): Promise<void>
-
-  /**
-   * Method fired when player state changes
-   * @param state player state after change
-   */
-  onPlayerStateChanged?(state: PlayerState): Promise<void>
-
-  /**
-   * Method fired when volume changes
-   * @param volume volume after change
-   */
-  onVolumeChanged?(volume: number): Promise<void>
-
-  /**
-   * Method fired when user manually seeks track
-   * @param time time to which the track was seeked
-   */
-  onSeeked?(time: number): Promise<void>
-
-  /**
-   * Method fired when song queue changes.
-   * @param queue
-   */
-  onSongQueueChanged?(queue: SongQueue): Promise<void>
-
-  /**
-   * Method fired when preferences corresponding to current extension changes
-   * @param param0 can be destructured into key and value which corresponds to changed preference
-   */
-  onPreferenceChanged?({
-    key,
-    value,
-  }: {
-    key: string
-    value: any
-  }): Promise<void>
 }
 
 /**
@@ -254,9 +212,15 @@ export interface playerControls {
 }
 
 export type ExtraExtensionEventTypes =
-  | "get-playlists"
-  | "get-playlist-songs"
-  | "on-oauth"
+  | "requestedPlaylists"
+  | "requestedPlaylistSongs"
+  | "oauthCallback"
+  | "songQueueChanged"
+  | "seeked"
+  | "volumeChanged"
+  | "playerStateChanged"
+  | "songChanged"
+  | "preferenceChanged"
 
 export type GetPlaylistReturnType = {
   playlists: Playlist[]
@@ -267,16 +231,28 @@ export type GetPlaylistSongsReturnType = {
 }
 
 export type ExtraExtensionEventData<T extends ExtraExtensionEventTypes> =
-  T extends "get-playlist-songs"
-    ? [string]
-    : T extends "on-oauth"
-    ? [string]
+  T extends "requestedPlaylistSongs"
+    ? [playlistID: string]
+    : T extends "oauthCallback"
+    ? [url: string]
+    : T extends "songQueueChanged"
+    ? [songQueue: SongQueue]
+    : T extends "seeked"
+    ? [newTime: number]
+    : T extends "volumeChanged"
+    ? [newVolume: number]
+    : T extends "playerStateChanged"
+    ? [newState: PlayerState]
+    : T extends "songChanged"
+    ? [song: Song]
+    : T extends "preferenceChanged"
+    ? [preference: { key: string; value: string }]
     : []
 
 export type ExtraExtensionEventReturnType<T extends ExtraExtensionEventTypes> =
-  T extends "get-playlists"
+  T extends "requestedPlaylists"
     ? GetPlaylistReturnType
-    : T extends "get-playlist-songs"
+    : T extends "requestedPlaylistSongs"
     ? GetPlaylistSongsReturnType
     : void
 
@@ -376,6 +352,12 @@ export interface extensionAPI {
    * @param path path on which the callback will be triggered
    */
   registerOAuth(path: string): Promise<void>
+
+  /**
+   * Open a url in system browser
+   * @param url string corresponding to URL which is to be opened
+   */
+  openExternalURL(url: string): Promise<void>
 
   /**
    * Register extra events callbacks
