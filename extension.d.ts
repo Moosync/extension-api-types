@@ -246,7 +246,7 @@ export type ExtraExtensionEventData<T extends ExtraExtensionEventTypes> =
     : T extends "songChanged"
     ? [song: Song]
     : T extends "preferenceChanged"
-    ? [preference: { key: string; value: string }]
+    ? [preference: { key: string; value: unknown }]
     : []
 
 export type ExtraExtensionEventReturnType<T extends ExtraExtensionEventTypes> =
