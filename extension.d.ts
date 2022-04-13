@@ -309,7 +309,7 @@ export interface extensionAPI {
    * @param key key of preference to fetch. keys within complex objects can be separated by .
    * @param defaultValue If the provided key is not found, then default value will be returned.
    */
-  getSecure<T>(key?: string, defaultValue?: unknown): Promise<T | undefined>
+  getSecure<T>(key: string, defaultValue?: unknown): Promise<T | undefined>
 
   /**
    * Encrypt value and store in preferences
@@ -361,6 +361,28 @@ export interface extensionAPI {
 
   /**
    * Register extra events callbacks. At any time only one callback can be assigned to one event
+   *
+   * Event-callback map:
+   *
+   * "requestedPlaylists": () => Promise<{@link GetPlaylistReturnType}>
+   *
+   * "requestedPlaylistSongs": (playlist_id: string) => Promise<{@link GetPlaylistSongsReturnType}>
+   *
+   * "oauthCallback": (url: string}) => void
+   *
+   * "songQueueChanged": (queue: {@link SongQueue}) => void
+   *
+   * "seeked": (time: number) => void
+   *
+   * "volumeChanged": (volume: number) => void
+   *
+   * "playerStateChanged": (state: {@link PlayerState}) => void
+   *
+   * "songChanged": (song: {@link Song}) => void
+   *
+   * "preferenceChanged": (preference: {key: string, value: unknown}) => void
+   *
+   *
    * @param eventName Name of event
    * @param callback Callback fired when event is emitted
    */

@@ -6,7 +6,7 @@
   "types": "index.d.ts",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "docs": "yarn typedoc index.d.ts models.d.ts"
+    "docs": "yarn typedoc index.d.ts"
   },
   "repository": {
     "type": "git",
