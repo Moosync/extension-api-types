@@ -42,7 +42,7 @@ export interface Song {
   song_coverPath_low?: string
   song_coverPath_high?: string
   album?: Album
-  artists?: string[]
+  artists?: Artists[]
   date?: string
   year?: number
   genre?: string[]
