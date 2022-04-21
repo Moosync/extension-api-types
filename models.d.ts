@@ -25,6 +25,7 @@ export interface Genre {
 export interface Playlist {
   playlist_id: string
   playlist_name: string
+  playlist_desc?: string
   playlist_coverPath: string | undefined
   playlist_song_count?: number
   playlist_path?: string
