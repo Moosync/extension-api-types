@@ -379,7 +379,7 @@ export type ExtensionContextMenuHandlerArgs<T extends ContextMenuTypes> = T exte
   ? Artists
   : T extends 'ALBUM'
   ? Album
-  : []
+  : undefined
 export interface extensionAPI {
   /**
    * Get songs from database filtered by provided options
@@ -526,6 +526,17 @@ export interface extensionAPI {
    * @param item New menu item to show in context menu
    */
   setContextMenuItem<T extends ContextMenuTypes>(...item: ExtensionContextMenuItem<T>[]): void
+
+  /**
+   * Remove an item from context menu
+   * @param index index of context menu item which is to be removed
+   */
+  removeContextMenuItem(index: number): void
+
+  /**
+   * Get all registered context menu items
+   */
+  getContextMenuItems(): ExtensionContextMenuItem<ContextMenuTypes>[]
 
   /**
    * Object containing controls for player
