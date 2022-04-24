@@ -256,6 +256,38 @@ export type ExtraExtensionEventReturnType<T extends ExtraExtensionEventTypes> =
     ? GetPlaylistSongsReturnType
     : void
 
+export type ExtensionContextMenuItem<T extends ContextMenuTypes> = {
+  type: T
+  label: string
+  disabled?: boolean
+  children?: ExtensionContextMenuItem<T>[]
+  handler?: (arg: ExtensionContextMenuHandlerArgs<T>) => void
+}
+
+export type ContextMenuTypes =
+  | "SONGS"
+  | "GENERAL_SONGS"
+  | "PLAYLIST"
+  | "GENERAL_PLAYLIST"
+  | "PLAYLIST_CONTENT"
+  | "QUEUE_ITEM"
+  | "ARTIST"
+  | "ALBUM"
+
+export type ExtensionContextMenuHandlerArgs<T extends ContextMenuTypes> =
+  T extends "SONGS"
+    ? Song[]
+    : T extends "PLAYLIST"
+    ? Playlist
+    : T extends "PLAYLIST_CONTENT"
+    ? Song[]
+    : T extends "QUEUE_ITEM"
+    ? Song
+    : T extends "ARTIST"
+    ? Artists
+    : T extends "ALBUM"
+    ? Album
+    : []
 export interface extensionAPI {
   /**
    * Get songs from database filtered by provided options
@@ -398,6 +430,14 @@ export interface extensionAPI {
    * @param eventName name of event whose callback is to be removed
    */
   off<T extends ExtraExtensionEventTypes>(eventName: T): void
+
+  /**
+   * Adds new context menu item/s
+   * @param item New menu item to show in context menu
+   */
+  setContextMenuItem<T extends ContextMenuTypes>(
+    ...item: ExtensionContextMenuItem<T>[]
+  ): void
 
   /**
    * Object containing controls for player
