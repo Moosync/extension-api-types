@@ -1,8 +1,6 @@
 {
     "files": [
         "index.d.ts",
-        "models.d.ts",
-        "extension.d.ts"
     ],
     "compilerOptions": {
         "typeRoots": [
@@ -10,8 +8,6 @@
         ],
     },
     "include": [
-        "extension.d.ts",
-        "models.d.ts",
-        "index.d.ts",
+        "index.d.ts"
     ],
 }
