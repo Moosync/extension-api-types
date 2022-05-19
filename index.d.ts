@@ -32,7 +32,7 @@ export interface Playlist {
   icon?: string
 }
 
-export type PlayerTypes = 'LOCAL' | 'YOUTUBE' | 'SPOTIFY' | 'URL'
+export type PlayerTypes = 'LOCAL' | 'YOUTUBE' | 'SPOTIFY' | 'URL' | 'DASH'
 
 export interface Song {
   _id: string
@@ -315,6 +315,8 @@ export type ExtraExtensionEventTypes =
   | 'playerStateChanged'
   | 'songChanged'
   | 'preferenceChanged'
+  | 'playbackDetailsRequested'
+  | 'customRequest'
 
 export type GetPlaylistReturnType = {
   playlists: Playlist[]
@@ -322,6 +324,16 @@ export type GetPlaylistReturnType = {
 
 export type GetPlaylistSongsReturnType = {
   songs: Song[]
+}
+
+export type GetPlaybackDetailsReturnType = {
+  duration: number
+  url: string
+}
+
+export type CustomRequestReturnType = {
+  mimeType: string
+  data: Buffer
 }
 
 export type ExtraExtensionEventData<T extends ExtraExtensionEventTypes> = T extends 'requestedPlaylistSongs'
@@ -340,12 +352,20 @@ export type ExtraExtensionEventData<T extends ExtraExtensionEventTypes> = T exte
   ? [song: Song]
   : T extends 'preferenceChanged'
   ? [preference: { key: string; value: unknown }]
+  : T extends 'playbackDetailsRequested'
+  ? [song: Song]
+  : T extends 'customRequest'
+  ? [url: string]
   : []
 
 export type ExtraExtensionEventReturnType<T extends ExtraExtensionEventTypes> = T extends 'requestedPlaylists'
   ? GetPlaylistReturnType
   : T extends 'requestedPlaylistSongs'
   ? GetPlaylistSongsReturnType
+  : T extends 'playbackDetailsRequested'
+  ? GetPlaybackDetailsReturnType
+  : T extends 'customRequest'
+  ? CustomRequestReturnType
   : void
 
 export type ExtensionContextMenuItem<T extends ContextMenuTypes> = {
