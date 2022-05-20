@@ -399,6 +399,17 @@ export type ExtensionContextMenuHandlerArgs<T extends ContextMenuTypes> = T exte
   : T extends 'ALBUM'
   ? Album
   : undefined
+
+export type AccountDetails = {
+  id: string
+  packageName: string
+  name: string
+  loggedIn: boolean
+  signinCallback: () => Promise<void> | void
+  signoutCallback: () => Promise<void> | void
+  accountName?: string
+}
+
 export interface extensionAPI {
   /**
    * Get songs from database filtered by provided options
