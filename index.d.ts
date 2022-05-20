@@ -404,10 +404,12 @@ export type AccountDetails = {
   id: string
   packageName: string
   name: string
+  bgColor: string
+  icon: string
   loggedIn: boolean
   signinCallback: () => Promise<void> | void
   signoutCallback: () => Promise<void> | void
-  accountName?: string
+  username?: string
 }
 
 export interface extensionAPI {
@@ -573,10 +575,20 @@ export interface extensionAPI {
    * The user will then be able to perform login / logout operations on this account
    * and also view its details
    *
-   * @param details details of account to be added
+   * @param name name of service provider
+   * @param bgColor background color to use for account card (in hex format. Eg. #000000)
+   * @param icon icon of account (preferably service provider's icon)
+   * @param signinCallback callback fired when user wishes to login
+   * @param signoutCallback callback fired when user wishes to logout
    * @returns generated accountId
    */
-  registerAccount(details: Omit<AccountDetails, 'id'>): Promise<string>
+  registerAccount(
+    name: string,
+    bgColor: string,
+    icon: string,
+    signinCallback: AccountDetails['signinCallback'],
+    signoutCallback: AccountDetails['signoutCallback']
+  ): Promise<string>
 
   /**
    * Change login status and signed in user's account name.
@@ -585,7 +597,7 @@ export interface extensionAPI {
    * @param loggedIn true if user is logged in otherwise false
    * @param accountName name of user's account if logged in otherwise undefined
    */
-  changeAccountAuthStatus(id: string, loggedIn: boolean, accountName?: string): Promise<void>
+  changeAccountAuthStatus(id: string, loggedIn: boolean, username?: string): Promise<void>
 
   /**
    * Object containing controls for player
