@@ -317,6 +317,8 @@ export type ExtraExtensionEventTypes =
   | 'preferenceChanged'
   | 'playbackDetailsRequested'
   | 'customRequest'
+  | 'requestedSongFromURL'
+  | 'requestedPlaylistFromURL'
 
 export type GetPlaylistReturnType = {
   playlists: Playlist[]
@@ -334,6 +336,15 @@ export type GetPlaybackDetailsReturnType = {
 export type CustomRequestReturnType = {
   mimeType: string
   data: Buffer
+}
+
+export type GetSongReturnType = {
+  song: Song
+}
+
+export type GetPlaylistAndSongsReturnType = {
+  playlist: Playlist
+  songs: Song[]
 }
 
 export type ExtraExtensionEventData<T extends ExtraExtensionEventTypes> = T extends 'requestedPlaylistSongs'
@@ -356,6 +367,10 @@ export type ExtraExtensionEventData<T extends ExtraExtensionEventTypes> = T exte
   ? [song: Song]
   : T extends 'customRequest'
   ? [url: string]
+  : T extends 'requestedSongFromURL'
+  ? [url: string]
+  : T extends 'requestedPlaylistFromURL'
+  ? [url: string]
   : []
 
 export type ExtraExtensionEventReturnType<T extends ExtraExtensionEventTypes> = T extends 'requestedPlaylists'
@@ -366,6 +381,10 @@ export type ExtraExtensionEventReturnType<T extends ExtraExtensionEventTypes> = 
   ? GetPlaybackDetailsReturnType
   : T extends 'customRequest'
   ? CustomRequestReturnType
+  : T extends 'requestedSongFromURL'
+  ? GetSongReturnType
+  : T extends 'requestedPlaylistFromURL'
+  ? GetPlaylistAndSongsReturnType
   : void
 
 export type ExtensionContextMenuItem<T extends ContextMenuTypes> = {
@@ -411,6 +430,22 @@ export type AccountDetails = {
   signoutCallback: () => Promise<void> | void
   username?: string
 }
+
+export type LoginModalData = {
+  providerName: string
+  providerColor: string
+  text?: string
+  url?: string
+} & (
+  | {
+      manualClick: true
+      oauthPath: string
+    }
+  | {
+      manualClick?: false
+      oauthPath?: string
+    }
+)
 
 export interface extensionAPI {
   /**
@@ -598,6 +633,9 @@ export interface extensionAPI {
    * @param accountName name of user's account if logged in otherwise undefined
    */
   changeAccountAuthStatus(id: string, loggedIn: boolean, username?: string): Promise<void>
+
+  openLoginModal(data: LoginModalData): Promise<boolean>
+  closeLoginModal(): Promise<void>
 
   /**
    * Object containing controls for player
