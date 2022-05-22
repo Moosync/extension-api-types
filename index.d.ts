@@ -319,6 +319,7 @@ export type ExtraExtensionEventTypes =
   | 'customRequest'
   | 'requestedSongFromURL'
   | 'requestedPlaylistFromURL'
+  | 'requestSearchResult'
 
 export type GetPlaylistReturnType = {
   playlists: Playlist[]
@@ -347,6 +348,11 @@ export type GetPlaylistAndSongsReturnType = {
   songs: Song[]
 }
 
+export type GetSearchReturnType = {
+  providerName: string
+  songs: Song[]
+}
+
 export type ExtraExtensionEventData<T extends ExtraExtensionEventTypes> = T extends 'requestedPlaylistSongs'
   ? [playlistID: string]
   : T extends 'oauthCallback'
@@ -371,6 +377,8 @@ export type ExtraExtensionEventData<T extends ExtraExtensionEventTypes> = T exte
   ? [url: string]
   : T extends 'requestedPlaylistFromURL'
   ? [url: string]
+  : T extends 'requestSearchResult'
+  ? [term: string]
   : []
 
 export type ExtraExtensionEventReturnType<T extends ExtraExtensionEventTypes> = T extends 'requestedPlaylists'
@@ -385,6 +393,8 @@ export type ExtraExtensionEventReturnType<T extends ExtraExtensionEventTypes> = 
   ? GetSongReturnType
   : T extends 'requestedPlaylistFromURL'
   ? GetPlaylistAndSongsReturnType
+  : T extends 'requestSearchResult'
+  ? GetSearchReturnType
   : void
 
 export type ExtensionContextMenuItem<T extends ContextMenuTypes> = {
