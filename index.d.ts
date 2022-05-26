@@ -343,12 +343,12 @@ export type CustomRequestReturnType = {
 
 export type GetSongReturnType = {
   song: Song
-} | void
+}
 
 export type GetPlaylistAndSongsReturnType = {
   playlist: Playlist
   songs: Song[]
-} | void
+}
 
 export type GetSearchReturnType = {
   providerName: string
@@ -393,21 +393,21 @@ export type ExtraExtensionEventData<T extends ExtraExtensionEventTypes> = T exte
   : []
 
 export type ExtraExtensionEventReturnType<T extends ExtraExtensionEventTypes> = T extends 'requestedPlaylists'
-  ? GetPlaylistReturnType
+  ? GetPlaylistReturnType | void
   : T extends 'requestedPlaylistSongs'
-  ? GetPlaylistSongsReturnType
+  ? GetPlaylistSongsReturnType | void
   : T extends 'playbackDetailsRequested'
-  ? GetPlaybackDetailsReturnType
+  ? GetPlaybackDetailsReturnType | void
   : T extends 'customRequest'
-  ? CustomRequestReturnType
+  ? CustomRequestReturnType | void
   : T extends 'requestedSongFromURL'
-  ? GetSongReturnType
+  ? GetSongReturnType | void
   : T extends 'requestedPlaylistFromURL'
-  ? GetPlaylistAndSongsReturnType
+  ? GetPlaylistAndSongsReturnType | void
   : T extends 'requestSearchResult'
-  ? GetSearchReturnType
+  ? GetSearchReturnType | void
   : T extends 'requestedRecommendations'
-  ? GetRecommendationsReturnType
+  ? GetRecommendationsReturnType | void
   : T extends 'requestedLyrics'
   ? string | void
   : void
