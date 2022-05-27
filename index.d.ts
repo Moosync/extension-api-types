@@ -30,10 +30,9 @@ export interface Playlist {
   playlist_song_count?: number
   playlist_path?: string
   icon?: string
-  isRemote?: boolean
 }
 
-export type PlayerTypes = 'LOCAL' | 'YOUTUBE' | 'SPOTIFY' | 'URL'
+export type PlayerTypes = 'LOCAL' | 'YOUTUBE' | 'SPOTIFY' | 'URL' | 'DASH'
 
 export interface Song {
   _id: string
@@ -316,6 +315,13 @@ export type ExtraExtensionEventTypes =
   | 'playerStateChanged'
   | 'songChanged'
   | 'preferenceChanged'
+  | 'playbackDetailsRequested'
+  | 'customRequest'
+  | 'requestedSongFromURL'
+  | 'requestedPlaylistFromURL'
+  | 'requestSearchResult'
+  | 'requestedRecommendations'
+  | 'requestedLyrics'
 
 export type GetPlaylistReturnType = {
   playlists: Playlist[]
@@ -325,8 +331,39 @@ export type GetPlaylistSongsReturnType = {
   songs: Song[]
 }
 
+export type GetPlaybackDetailsReturnType = {
+  duration: number
+  url: string
+}
+
+export type CustomRequestReturnType = {
+  mimeType: string
+  data: Buffer
+}
+
+export type GetSongReturnType = {
+  song: Song
+}
+
+export type GetPlaylistAndSongsReturnType = {
+  playlist: Playlist
+  songs: Song[]
+}
+
+export type GetSearchReturnType = {
+  providerName: string
+  songs: Song[]
+}
+
+export type GetRecommendationsReturnType = {
+  providerName: string
+  songs: Song[]
+}
+
 export type ExtraExtensionEventData<T extends ExtraExtensionEventTypes> = T extends 'requestedPlaylistSongs'
-  ? [playlistID: string]
+  ? [playlistID: string, invalidateCache: boolean]
+  : T extends 'requestedPlaylists'
+  ? [invalidateCache: boolean]
   : T extends 'oauthCallback'
   ? [url: string]
   : T extends 'songQueueChanged'
@@ -341,12 +378,38 @@ export type ExtraExtensionEventData<T extends ExtraExtensionEventTypes> = T exte
   ? [song: Song]
   : T extends 'preferenceChanged'
   ? [preference: { key: string; value: unknown }]
+  : T extends 'playbackDetailsRequested'
+  ? [song: Song]
+  : T extends 'customRequest'
+  ? [url: string]
+  : T extends 'requestedSongFromURL'
+  ? [url: string]
+  : T extends 'requestedPlaylistFromURL'
+  ? [url: string]
+  : T extends 'requestSearchResult'
+  ? [term: string]
+  : T extends 'requestedLyrics'
+  ? [song: Song]
   : []
 
 export type ExtraExtensionEventReturnType<T extends ExtraExtensionEventTypes> = T extends 'requestedPlaylists'
-  ? GetPlaylistReturnType
+  ? GetPlaylistReturnType | void
   : T extends 'requestedPlaylistSongs'
-  ? GetPlaylistSongsReturnType
+  ? GetPlaylistSongsReturnType | void
+  : T extends 'playbackDetailsRequested'
+  ? GetPlaybackDetailsReturnType | void
+  : T extends 'customRequest'
+  ? CustomRequestReturnType | void
+  : T extends 'requestedSongFromURL'
+  ? GetSongReturnType | void
+  : T extends 'requestedPlaylistFromURL'
+  ? GetPlaylistAndSongsReturnType | void
+  : T extends 'requestSearchResult'
+  ? GetSearchReturnType | void
+  : T extends 'requestedRecommendations'
+  ? GetRecommendationsReturnType | void
+  : T extends 'requestedLyrics'
+  ? string | void
   : void
 
 export type ExtensionContextMenuItem<T extends ContextMenuTypes> = {
@@ -380,6 +443,35 @@ export type ExtensionContextMenuHandlerArgs<T extends ContextMenuTypes> = T exte
   : T extends 'ALBUM'
   ? Album
   : undefined
+
+export type AccountDetails = {
+  id: string
+  packageName: string
+  name: string
+  bgColor: string
+  icon: string
+  loggedIn: boolean
+  signinCallback: () => Promise<void> | void
+  signoutCallback: () => Promise<void> | void
+  username?: string
+}
+
+export type LoginModalData = {
+  providerName: string
+  providerColor: string
+  text?: string
+  url?: string
+} & (
+  | {
+      manualClick: true
+      oauthPath: string
+    }
+  | {
+      manualClick?: false
+      oauthPath?: string
+    }
+)
+
 export interface extensionAPI {
   /**
    * Get songs from database filtered by provided options
@@ -537,6 +629,38 @@ export interface extensionAPI {
    * Get all registered context menu items
    */
   getContextMenuItems(): ExtensionContextMenuItem<ContextMenuTypes>[]
+
+  /**
+   * Add an account to show in accounts section in main app.
+   * The user will then be able to perform login / logout operations on this account
+   * and also view its details
+   *
+   * @param name name of service provider
+   * @param bgColor background color to use for account card (in hex format. Eg. #000000)
+   * @param icon icon of account (preferably service provider's icon)
+   * @param signinCallback callback fired when user wishes to login
+   * @param signoutCallback callback fired when user wishes to logout
+   * @returns generated accountId
+   */
+  registerAccount(
+    name: string,
+    bgColor: string,
+    icon: string,
+    signinCallback: AccountDetails['signinCallback'],
+    signoutCallback: AccountDetails['signoutCallback']
+  ): Promise<string>
+
+  /**
+   * Change login status and signed in user's account name.
+   *
+   * @param id accountId to change details of. Returned from {@link registerAccount}
+   * @param loggedIn true if user is logged in otherwise false
+   * @param accountName name of user's account if logged in otherwise undefined
+   */
+  changeAccountAuthStatus(id: string, loggedIn: boolean, username?: string): Promise<void>
+
+  openLoginModal(data: LoginModalData): Promise<boolean>
+  closeLoginModal(): Promise<void>
 
   /**
    * Object containing controls for player
