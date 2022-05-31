@@ -456,7 +456,7 @@ export type AccountDetails = {
   username?: string
 }
 
-export type LoginModalData = {
+export type LoginModalOptions = {
   providerName: string
   providerColor: string
   text?: string
@@ -691,15 +691,6 @@ export interface extensionAPI {
   on(eventName: 'requestedLyrics', callback: (song: Song) => Promise<string | void>): void
 
   /**
-   * Register extra events callbacks. At any time only one callback can be assigned to one event
-   *
-   * @param eventName Name of event
-   * @param callback Callback fired when event is emitted
-   */
-  // eslint-disable-next-line @typescript-eslint/ban-types
-  on(eventName: string, callback: Function): void
-
-  /**
    * Remove callbacks from extra events
    * @param eventName name of event whose callback is to be removed
    */
@@ -751,8 +742,29 @@ export interface extensionAPI {
    */
   changeAccountAuthStatus(id: string, loggedIn: boolean, username?: string): Promise<void>
 
-  openLoginModal(data: LoginModalData): Promise<boolean>
+  /**
+   * Open login modal. Show the modal if the extension demands the user to open a linux
+   * to fulfill OAuth requirements.
+   *
+   * The modal also allows the user to manually enter a token or manually click a button when
+   * the task is fulfilled
+   *
+   * @param options options to control the oauth modal
+   */
+  openLoginModal(options: LoginModalOptions): Promise<boolean>
+
+  /**
+   * Close login modal if its open
+   */
   closeLoginModal(): Promise<void>
+
+  /**
+   * Show toast on top-right of screen
+   * @param message message to show in toast
+   * @param duration duration of toast in milliseconds. Maximum 5000ms
+   * @param type type of toast. Usually denotes color
+   */
+  showToast(message: string, duration?: number, type?: 'success' | 'info' | 'error' | 'default')
 
   /**
    * Object containing controls for player
