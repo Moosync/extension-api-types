@@ -21,7 +21,7 @@ export interface Artists {
     spotify?: {
       artist_id?: string
     }
-    extensions?: Record<string, Record<string, string>>
+    extensions?: Record<string, Record<string, string | undefined> | undefined>
   }
 }
 
@@ -331,7 +331,7 @@ export type ExtraExtensionEventTypes =
   | 'customRequest'
   | 'requestedSongFromURL'
   | 'requestedPlaylistFromURL'
-  | 'requestSearchResult'
+  | 'requestedSearchResult'
   | 'requestedRecommendations'
   | 'requestedLyrics'
   | 'requestedArtistSongs'
@@ -348,7 +348,7 @@ export type ExtraExtensionEventReturnType<T extends ExtraExtensionEventTypes> = 
   ? SongReturnType | void
   : T extends 'requestedPlaylistFromURL'
   ? PlaylistAndSongsReturnType | void
-  : T extends 'requestSearchResult'
+  : T extends 'requestedSearchResult'
   ? SongsReturnType | void
   : T extends 'requestedRecommendations'
   ? GetRecommendationsReturnType | void
@@ -384,7 +384,7 @@ export type ExtraExtensionEventData<T extends ExtraExtensionEventTypes> = T exte
   ? [url: string]
   : T extends 'requestedPlaylistFromURL'
   ? [url: string]
-  : T extends 'requestSearchResult'
+  : T extends 'requestedSearchResult'
   ? [term: string]
   : T extends 'requestedLyrics'
   ? [song: Song]
@@ -398,6 +398,13 @@ export type PlaylistReturnType = {
 
 export type SongsReturnType = {
   songs: Song[]
+}
+
+export type SearchReturnType = {
+  songs: Song[]
+  playlists: Playlist[]
+  artists: Artists[]
+  albums: Album[]
 }
 
 export type PlaybackDetailsReturnType = {
@@ -682,7 +689,7 @@ export interface extensionAPI {
    * Requires extension to be registered as a provider using {@link registerSearchProvider}
 
    */
-  on(eventName: 'requestSearchResult', callback: (term: string) => Promise<SongsReturnType | void>): void
+  on(eventName: 'requestedSearchResult', callback: (term: string) => Promise<SearchReturnType | void>): void
 
   /**
    * Event fired when user opens Explore page
@@ -781,7 +788,7 @@ export interface extensionAPI {
   showToast(message: string, duration?: number, type?: 'success' | 'info' | 'error' | 'default')
 
   /**
-   * Register extension as provider of search results. 'requestSearchResult' can be
+   * Register extension as provider of search results. 'requestedSearchResult' can be
    * listened after calling this method.
    *
    * @param title Title to show in search page
