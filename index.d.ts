@@ -5,6 +5,12 @@ export interface Album {
   album_coverPath_low?: string
   album_song_count?: number
   album_artist?: string
+  album_extra_info?: {
+    spotify?: {
+      album_id?: string
+    }
+    extensions?: Record<string, Record<string, string | undefined> | undefined>
+  }
   year?: number
 }
 
@@ -14,6 +20,15 @@ export interface Artists {
   artist_mbid?: string
   artist_coverPath?: string
   artist_song_count?: number
+  artist_extra_info?: {
+    youtube?: {
+      channel_id?: string
+    }
+    spotify?: {
+      artist_id?: string
+    }
+    extensions?: Record<string, Record<string, string | undefined> | undefined>
+  }
 }
 
 export interface Genre {
@@ -246,7 +261,7 @@ export interface SongAPIOptions {
  * Options for searching entities like Albums, Artists, Playlists or Genre
  *
  */
-export type EntityApiOptions = {
+export type EntityApiOptions<T extends Artists | Album | Genre | Playlist> = {
   /**
    * If false, then the exact match of all options will be provided.
    * If true, then even if an entity matches one of the options, it will be returned.
@@ -260,20 +275,23 @@ export type EntityApiOptions = {
    * If inclusive is false then albums having album_name as 'aaa' OR album_id as 'bbb' will be returned
    */
   inclusive?: boolean
-} & (
-  | {
-      album: Partial<Album> | boolean
-    }
-  | {
+} & (T extends Artists
+  ? {
       artist: Partial<Artists> | boolean
     }
-  | {
+  : T extends Album
+  ? {
+      album: Partial<Album> | boolean
+    }
+  : T extends Genre
+  ? {
       genre: Partial<Genre> | boolean
     }
-  | {
+  : T extends Playlist
+  ? {
       playlist: Partial<Playlist> | boolean
     }
-)
+  : Record<string, never>)
 
 /**
  * Methods to control the audio player in Moosync
@@ -319,28 +337,34 @@ export type ExtraExtensionEventTypes =
   | 'customRequest'
   | 'requestedSongFromURL'
   | 'requestedPlaylistFromURL'
-  | 'requestSearchResult'
+  | 'requestedSearchResult'
   | 'requestedRecommendations'
   | 'requestedLyrics'
+  | 'requestedArtistSongs'
+  | 'requestedAlbumSongs'
 
 export type ExtraExtensionEventReturnType<T extends ExtraExtensionEventTypes> = T extends 'requestedPlaylists'
-  ? GetPlaylistReturnType | void
+  ? PlaylistReturnType | void
   : T extends 'requestedPlaylistSongs'
-  ? GetPlaylistSongsReturnType | void
+  ? SongsReturnType | void
   : T extends 'playbackDetailsRequested'
-  ? GetPlaybackDetailsReturnType | void
+  ? PlaybackDetailsReturnType | void
   : T extends 'customRequest'
   ? CustomRequestReturnType | void
   : T extends 'requestedSongFromURL'
-  ? GetSongReturnType | void
+  ? SongReturnType | void
   : T extends 'requestedPlaylistFromURL'
-  ? GetPlaylistAndSongsReturnType | void
-  : T extends 'requestSearchResult'
-  ? GetSearchReturnType | void
+  ? PlaylistAndSongsReturnType | void
+  : T extends 'requestedSearchResult'
+  ? SearchReturnType | void
   : T extends 'requestedRecommendations'
   ? GetRecommendationsReturnType | void
   : T extends 'requestedLyrics'
   ? string | void
+  : T extends 'requestedArtistSongs'
+  ? SongsReturnType
+  : T extends 'requestedAlbumSongs'
+  ? SongsReturnType
   : void
 
 export type ExtraExtensionEventData<T extends ExtraExtensionEventTypes> = T extends 'requestedPlaylistSongs'
@@ -369,45 +393,52 @@ export type ExtraExtensionEventData<T extends ExtraExtensionEventTypes> = T exte
   ? [url: string]
   : T extends 'requestedPlaylistFromURL'
   ? [url: string]
-  : T extends 'requestSearchResult'
+  : T extends 'requestedSearchResult'
   ? [term: string]
   : T extends 'requestedLyrics'
   ? [song: Song]
+  : T extends 'requestedArtistSongs'
+  ? [artist: Artists]
+  : T extends 'requestedAlbumSongs'
+  ? [album: Album]
   : []
 
-export type GetPlaylistReturnType = {
+export type PlaylistReturnType = {
   playlists: Playlist[]
 }
 
-export type GetPlaylistSongsReturnType = {
+export type SongsReturnType = {
   songs: Song[]
 }
 
-export type GetPlaybackDetailsReturnType = {
+export type SearchReturnType = {
+  songs: Song[]
+  playlists: Playlist[]
+  artists: Artists[]
+  albums: Album[]
+}
+
+export type PlaybackDetailsReturnType = {
   duration: number
   url: string
 }
 
 export type CustomRequestReturnType = {
-  mimeType: string
-  data: Buffer
+  mimeType?: string
+  data?: Buffer
+  redirectUrl?: string
 }
 
-export type GetSongReturnType = {
+export type SongReturnType = {
   song: Song
 }
 
-export type GetPlaylistAndSongsReturnType = {
+export type PlaylistAndSongsReturnType = {
   playlist: Playlist
   songs: Song[]
 }
 
-export type GetSearchReturnType = {
-  providerName: string
-  songs: Song[]
-}
-
-export type GetRecommendationsReturnType = {
+export type RecommendationsReturnType = {
   providerName: string
   songs: Song[]
 }
@@ -472,7 +503,22 @@ export type LoginModalOptions = {
     }
 )
 
+export interface utils {
+  /**
+   * Helper function that returns extra info stored by this extension only
+   */
+  getArtistExtraInfo(artist: Artists): Record<string, string> | undefined
+
+  /**
+   * Helper function that returns extra info stored by this extension only
+   */
+  getAlbumExtraInfo(album: Album): Record<string, string> | undefined
+}
+
 export interface extensionAPI {
+  utils: utils
+  packageName: string
+
   /**
    * Get songs from database filtered by provided options
    * @param options filter the results
@@ -539,7 +585,7 @@ export interface extensionAPI {
    * @param songs 1 or more songs that are to be added to library
    * @returns array of booleans with same index as song. True means song has been added successfully
    */
-  addSongs(...songs: Song[]): Promise<boolean[] | undefined>
+  addSongs(...songs: Song[]): Promise<(Song | undefined)[] | undefined>
 
   /**
    * Remove song from library
@@ -579,10 +625,7 @@ export interface extensionAPI {
    * Event fired when playlists are requested by the user
    * The callback should return and result playlists or undefined
    */
-  on(
-    eventName: 'requestedPlaylists',
-    callback: (invalidateCache: boolean) => Promise<GetPlaylistReturnType | void>
-  ): void
+  on(eventName: 'requestedPlaylists', callback: (invalidateCache: boolean) => Promise<PlaylistReturnType | void>): void
 
   /**
    * Event fired when songs of a single playlist are requested by the user
@@ -590,7 +633,7 @@ export interface extensionAPI {
    */
   on(
     eventName: 'requestedPlaylistSongs',
-    callback: (playlistID: string, invalidateCache: boolean) => Promise<GetPlaylistSongsReturnType | void>
+    callback: (playlistID: string, invalidateCache: boolean) => Promise<SongsReturnType | void>
   ): void
 
   /**
@@ -635,10 +678,7 @@ export interface extensionAPI {
    *
    * Can be used to dynamically provide playbackUrl and/or duration
    */
-  on(
-    eventName: 'playbackDetailsRequested',
-    callback: (song: Song) => Promise<GetPlaybackDetailsReturnType | void>
-  ): void
+  on(eventName: 'playbackDetailsRequested', callback: (song: Song) => Promise<PlaybackDetailsReturnType | void>): void
 
   /**
    * Event fired when custom url corresponding to the extension is called
@@ -661,34 +701,50 @@ export interface extensionAPI {
    * Event fired when user enters url in 'Add song from URL' modal
    * Callback should return parsed song or undefined
    */
-  on(eventName: 'requestedSongFromURL', callback: (url: string) => Promise<GetSongReturnType | void>): void
+  on(eventName: 'requestedSongFromURL', callback: (url: string) => Promise<SongReturnType | void>): void
 
   /**
    * Event fired when user enters url in 'Add playlist from URL' modal
    * Callback should return a playlist and parsed songs in that playlist or undefined
    */
-  on(
-    eventName: 'requestedPlaylistFromURL',
-    callback: (url: string) => Promise<GetPlaylistAndSongsReturnType | void>
-  ): void
+  on(eventName: 'requestedPlaylistFromURL', callback: (url: string) => Promise<PlaylistAndSongsReturnType | void>): void
 
   /**
    * Event fired when user searches a term in search page
    * Callback should return a providerName and result songs or undefined
+   * 
+   * Requires extension to be registered as a provider using {@link registerSearchProvider}
+
    */
-  on(eventName: 'requestSearchResult', callback: (term: string) => Promise<GetSearchReturnType | void>): void
+  on(eventName: 'requestedSearchResult', callback: (term: string) => Promise<SearchReturnType | void>): void
 
   /**
    * Event fired when user opens Explore page
    * Callback should return a providerName and result songs or undefined
    */
-  on(eventName: 'requestedRecommendations', callback: () => Promise<GetRecommendationsReturnType | void>): void
+  on(eventName: 'requestedRecommendations', callback: () => Promise<RecommendationsReturnType | void>): void
 
   /**
    * Event fired when lyrics are requested for a song
    * Callback should return a string (HTML formatting) with lyrics or undefined
    */
   on(eventName: 'requestedLyrics', callback: (song: Song) => Promise<string | void>): void
+
+  /**
+   * Event fired when songs by a particular artist are requested
+   * Callback should return parsed songs or undefined
+   *
+   * Requires extension to be registered as a provider using {@link registerArtistSongProvider}
+   */
+  on(eventName: 'requestedArtistSongs', callback: (artist: Artists) => Promise<SongsReturnType | void>)
+
+  /**
+   * Event fired when songs by a particular album are requested
+   * Callback should return parsed songs or undefined
+   *
+   * Requires extension to be registered as a provider using {@link registerAlbumSongProvider}
+   */
+  on(eventName: 'requestedAlbumSongs', callback: (album: Album) => Promise<SongsReturnType | void>)
 
   /**
    * Remove callbacks from extra events
@@ -765,6 +821,44 @@ export interface extensionAPI {
    * @param type type of toast. Usually denotes color
    */
   showToast(message: string, duration?: number, type?: 'success' | 'info' | 'error' | 'default')
+
+  /**
+   * Register extension as provider of search results. 'requestedSearchResult' can be
+   * listened after calling this method.
+   *
+   * @param title Title to show in search page
+   */
+  registerSearchProvider(title: string): void
+
+  /**
+   * Register extension as provider of artist songs. 'requestedArtistSongs' can be
+   * listened after calling this method
+   *
+   * @param title Title to show in artists page
+   */
+  registerArtistSongProvider(title: string): void
+
+  /**
+   * Register extension as provider of album songs. 'requestedAlbumSongs' can be
+   * listened after calling this method
+   *
+   * @param title Title to show in albums page
+   */
+  registerAlbumSongProvider(title: string): void
+
+  /**
+   * Set extra info for an artist. This info is editable by the user using "Show info" context menu
+   * option on artist
+   * @param object Key-value pairs of editable info
+   */
+  setArtistEditableInfo(artist_id: string, object: Record<string, string>): Promise<void>
+
+  /**
+   * Set extra info for an album. This info is editable by the user using "Show info" context menu
+   * option on album
+   * @param object Key-value pairs of editable info
+   */
+  setAlbumEditableInfo(artist_id: string, object: Record<string, string>): Promise<void>
 
   /**
    * Object containing controls for player
