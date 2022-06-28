@@ -424,8 +424,9 @@ export type PlaybackDetailsReturnType = {
 }
 
 export type CustomRequestReturnType = {
-  mimeType: string
-  data: Buffer
+  mimeType?: string
+  data?: Buffer
+  redirectUrl?: string
 }
 
 export type SongReturnType = {
