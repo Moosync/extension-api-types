@@ -47,7 +47,7 @@ export interface Playlist {
   icon?: string
 }
 
-export type PlayerTypes = 'LOCAL' | 'YOUTUBE' | 'SPOTIFY' | 'URL' | 'DASH'
+export type PlayerTypes = 'LOCAL' | 'YOUTUBE' | 'SPOTIFY' | 'URL' | 'DASH' | 'HLS'
 
 export interface Song {
   _id: string
