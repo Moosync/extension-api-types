@@ -45,6 +45,7 @@ export interface Playlist {
   playlist_song_count?: number
   playlist_path?: string
   icon?: string
+  extension?: string
 }
 
 export type PlayerTypes = 'LOCAL' | 'YOUTUBE' | 'SPOTIFY' | 'URL' | 'DASH' | 'HLS'
