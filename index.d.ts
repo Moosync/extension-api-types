@@ -9,6 +9,9 @@ export interface Album {
     spotify?: {
       album_id?: string
     }
+    youtube?: {
+      album_id?: string
+    }
     extensions?: Record<string, Record<string, string | undefined> | undefined>
   }
   year?: number
