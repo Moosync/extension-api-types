@@ -82,6 +82,7 @@ export interface Song {
   icon?: string
   type: PlayerTypes
   playCount?: number
+  showInLibrary?: boolean
 }
 
 export interface SearchableSong {
@@ -98,6 +99,8 @@ export interface SearchableSong {
 
   // Will return all songs provided by this extension
   extension?: boolean | string
+
+  showInLibrary?: boolean
 }
 
 export type PlayerState = 'PLAYING' | 'PAUSED' | 'STOPPED' | 'LOADING'
