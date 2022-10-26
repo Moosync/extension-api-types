@@ -44,7 +44,7 @@ export interface Playlist {
   playlist_id: string
   playlist_name: string
   playlist_desc?: string
-  playlist_coverPath: string | undefined
+  playlist_coverPath?: string | undefined
   playlist_song_count?: number
   playlist_path?: string
   icon?: string
@@ -373,32 +373,30 @@ export type ExtraExtensionEventTypes =
   | 'playlistAdded'
   | 'playlistRemoved'
 
-export type ExtraExtensionEventReturnType<T extends ExtraExtensionEventTypes> = T extends 'requestedPlaylists'
-  ? PlaylistReturnType | void
-  : T extends 'requestedPlaylistSongs'
-  ? SongsReturnType | void
-  : T extends 'playbackDetailsRequested'
-  ? PlaybackDetailsReturnType | void
-  : T extends 'customRequest'
-  ? CustomRequestReturnType | void
-  : T extends 'requestedSongFromURL'
-  ? SongReturnType | void
-  : T extends 'requestedPlaylistFromURL'
-  ? PlaylistAndSongsReturnType | void
-  : T extends 'requestedSearchResult'
-  ? SearchReturnType | void
-  : T extends 'requestedRecommendations'
-  ? RecommendationsReturnType | void
-  : T extends 'requestedLyrics'
-  ? string | void
-  : T extends 'requestedArtistSongs'
-  ? SongsReturnType
-  : T extends 'requestedAlbumSongs'
-  ? SongsReturnType
-  : void
+export type ExtraExtensionEventReturnType<T extends ExtraExtensionEventTypes> =
+  | (T extends 'requestedPlaylists'
+      ? PlaylistReturnType
+      : T extends 'requestedPlaylistSongs' | 'requestedArtistSongs' | 'requestedAlbumSongs'
+      ? SongsWithPageTokenReturnType | ForwardRequestReturnType<T>
+      : T extends 'playbackDetailsRequested'
+      ? PlaybackDetailsReturnType | ForwardRequestReturnType<T>
+      : T extends 'customRequest'
+      ? CustomRequestReturnType
+      : T extends 'requestedSongFromURL'
+      ? SongReturnType | ForwardRequestReturnType<T>
+      : T extends 'requestedPlaylistFromURL'
+      ? PlaylistAndSongsReturnType | ForwardRequestReturnType<T>
+      : T extends 'requestedSearchResult'
+      ? SearchReturnType | ForwardRequestReturnType<T>
+      : T extends 'requestedRecommendations'
+      ? RecommendationsReturnType | ForwardRequestReturnType<T>
+      : T extends 'requestedLyrics'
+      ? string
+      : void)
+  | void
 
 export type ExtraExtensionEventData<T extends ExtraExtensionEventTypes> = T extends 'requestedPlaylistSongs'
-  ? [playlistID: string, invalidateCache: boolean]
+  ? [playlistID: string, invalidateCache: boolean, nextPageToken: unknown | undefined]
   : T extends 'requestedPlaylists'
   ? [invalidateCache: boolean]
   : T extends 'oauthCallback'
@@ -428,14 +426,14 @@ export type ExtraExtensionEventData<T extends ExtraExtensionEventTypes> = T exte
   : T extends 'requestedLyrics'
   ? [song: Song]
   : T extends 'requestedArtistSongs'
-  ? [artist: Artists]
+  ? [artist: Artists, nextPageToken: unknown | undefined]
   : T extends 'requestedAlbumSongs'
-  ? [album: Album]
+  ? [album: Album, nextPageToken: unknown | undefined]
   : T extends 'songAdded' | 'songRemoved'
   ? [songs: Song[]]
   : T extends 'playlistAdded' | 'playlistRemoved'
   ? [playlists: Playlist[]]
-  : []
+  : never[]
 
 export type PlaylistReturnType = {
   playlists: Playlist[]
@@ -443,6 +441,11 @@ export type PlaylistReturnType = {
 
 export type SongsReturnType = {
   songs: Song[]
+}
+
+export type SongsWithPageTokenReturnType = {
+  songs: Song[]
+  nextPageToken: unknown
 }
 
 export type SearchReturnType = {
@@ -473,7 +476,6 @@ export type PlaylistAndSongsReturnType = {
 }
 
 export type RecommendationsReturnType = {
-  providerName: string
   songs: Song[]
 }
 
@@ -483,6 +485,11 @@ export type ExtensionContextMenuItem<T extends ContextMenuTypes> = {
   disabled?: boolean
   children?: ExtensionContextMenuItem<T>[]
   handler?: (arg: ExtensionContextMenuHandlerArgs<T>) => void
+}
+
+export type ForwardRequestReturnType<T extends ExtraExtensionEventTypes | unknown> = {
+  forwardTo: 'youtube' | 'spotify' | string
+  transformedData?: ExtraExtensionEventData<T>
 }
 
 export type ContextMenuTypes =
@@ -664,6 +671,11 @@ export interface extensionAPI {
    */
   openExternalURL(url: string): Promise<void>
 
+  on<T extends ExtraExtensionEventTypes>(
+    eventName: T,
+    callback: (...args: ExtraExtensionEventData<T>) => Promise<ExtraExtensionEventReturnType<T> | void>
+  ): void
+
   /**
    * Event fired when playlists are requested by the user
    * The callback should return and result playlists or undefined
@@ -721,7 +733,12 @@ export interface extensionAPI {
    *
    * Can be used to dynamically provide playbackUrl and/or duration
    */
-  on(eventName: 'playbackDetailsRequested', callback: (song: Song) => Promise<PlaybackDetailsReturnType | void>): void
+  on(
+    eventName: 'playbackDetailsRequested',
+    callback: (
+      song: Song
+    ) => Promise<PlaybackDetailsReturnType | ForwardRequestReturnType<'playbackDetailsRequested'> | void>
+  ): void
 
   /**
    * Event fired when custom url corresponding to the extension is called
@@ -744,43 +761,66 @@ export interface extensionAPI {
    * Event fired when user enters url in 'Add song from URL' modal
    * Callback should return parsed song or undefined
    */
-  on(eventName: 'requestedSongFromURL', callback: (url: string) => Promise<SongReturnType | void>): void
+  on(
+    eventName: 'requestedSongFromURL',
+    callback: (url: string) => Promise<SongReturnType | ForwardRequestReturnType<'requestedSongFromURL'> | void>
+  ): void
 
   /**
    * Event fired when user enters url in 'Add playlist from URL' modal
    * Callback should return a playlist and parsed songs in that playlist or undefined
    */
-  on(eventName: 'requestedPlaylistFromURL', callback: (url: string) => Promise<PlaylistAndSongsReturnType | void>): void
+  on(
+    eventName: 'requestedPlaylistFromURL',
+    callback: (
+      url: string
+    ) => Promise<PlaylistAndSongsReturnType | ForwardRequestReturnType<'requestedPlaylistFromURL'> | void>
+  ): void
 
   /**
    * Event fired when user searches a term in search page
    * Callback should return a providerName and result songs or undefined
    */
-  on(eventName: 'requestedSearchResult', callback: (term: string) => Promise<SearchReturnType | void>): void
+  on(
+    eventName: 'requestedSearchResult',
+    callback: (term: string) => Promise<SearchReturnType | ForwardRequestReturnType<'requestedSearchResult'> | void>
+  ): void
 
   /**
    * Event fired when user opens Explore page
    * Callback should return a providerName and result songs or undefined
    */
-  on(eventName: 'requestedRecommendations', callback: () => Promise<RecommendationsReturnType | void>): void
+  on(
+    eventName: 'requestedRecommendations',
+    callback: () => Promise<RecommendationsReturnType | ForwardRequestReturnType<'requestedRecommendations'> | void>
+  ): void
 
   /**
    * Event fired when lyrics are requested for a song
    * Callback should return a string (HTML formatting) with lyrics or undefined
    */
-  on(eventName: 'requestedLyrics', callback: (song: Song) => Promise<string | void>): void
+  on(
+    eventName: 'requestedLyrics',
+    callback: (song: Song) => Promise<string | ForwardRequestReturnType<'requestedLyrics'> | void>
+  ): void
 
   /**
    * Event fired when songs by a particular artist are requested
    * Callback should return parsed songs or undefined
    */
-  on(eventName: 'requestedArtistSongs', callback: (artist: Artists) => Promise<SongsReturnType | void>): void
+  on(
+    eventName: 'requestedArtistSongs',
+    callback: (artist: Artists) => Promise<SongsReturnType | ForwardRequestReturnType<'requestedArtistSongs'> | void>
+  ): void
 
   /**
    * Event fired when songs by a particular album are requested
    * Callback should return parsed songs or undefined
    */
-  on(eventName: 'requestedAlbumSongs', callback: (album: Album) => Promise<SongsReturnType | void>): void
+  on(
+    eventName: 'requestedAlbumSongs',
+    callback: (album: Album) => Promise<SongsReturnType | ForwardRequestReturnType<'requestedAlbumSongs'> | void>
+  ): void
 
   /**
    * Event fired when songs are added to library
@@ -891,6 +931,11 @@ export interface extensionAPI {
    * @param object Key-value pairs of editable info
    */
   setAlbumEditableInfo(artist_id: string, object: Record<string, string>): Promise<void>
+
+  /**
+   * Returns a list of package names of all installed extensions
+   */
+  getInstalledExtensions(): string[]
 
   /**
    * Object containing controls for player
