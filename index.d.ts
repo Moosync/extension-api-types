@@ -391,7 +391,7 @@ export type ExtraExtensionEventReturnType<T extends ExtraExtensionEventTypes> =
       : T extends 'requestedRecommendations'
       ? RecommendationsReturnType | ForwardRequestReturnType<T>
       : T extends 'requestedLyrics'
-      ? string
+      ? string | ForwardRequestReturnType<T>
       : void)
   | void
 
@@ -445,7 +445,7 @@ export type SongsReturnType = {
 
 export type SongsWithPageTokenReturnType = {
   songs: Song[]
-  nextPageToken: unknown
+  nextPageToken?: unknown
 }
 
 export type SearchReturnType = {
@@ -677,11 +677,6 @@ export interface extensionAPI {
    */
   openExternalURL(url: string): Promise<void>
 
-  on<T extends ExtraExtensionEventTypes>(
-    eventName: T,
-    callback: (...args: ExtraExtensionEventData<T>) => Promise<ExtraExtensionEventReturnType<T> | void>
-  ): void
-
   /**
    * Event fired when playlists are requested by the user
    * The callback should return and result playlists or undefined
@@ -694,7 +689,11 @@ export interface extensionAPI {
    */
   on(
     eventName: 'requestedPlaylistSongs',
-    callback: (playlistID: string, invalidateCache: boolean, nextPageToken?: unknown) => Promise<SongsReturnType | void>
+    callback: (
+      playlistID: string,
+      invalidateCache: boolean,
+      nextPageToken?: unknown
+    ) => Promise<SongsReturnType | ForwardRequestReturnType<'requestedPlaylistSongs'> | void>
   ): void
 
   /**
