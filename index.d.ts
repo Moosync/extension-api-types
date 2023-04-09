@@ -388,6 +388,7 @@ export type ExtraExtensionEventTypes =
   | 'playlistAdded'
   | 'playlistRemoved'
   | 'requestedSongFromId'
+  | 'getRemoteURL'
 
 export type ExtraExtensionEventReturnType<T extends ExtraExtensionEventTypes> =
   | (T extends 'requestedPlaylists'
@@ -406,7 +407,7 @@ export type ExtraExtensionEventReturnType<T extends ExtraExtensionEventTypes> =
       ? SearchReturnType | ForwardRequestReturnType<T>
       : T extends 'requestedRecommendations'
       ? RecommendationsReturnType | ForwardRequestReturnType<T>
-      : T extends 'requestedLyrics'
+      : T extends 'requestedLyrics' | 'getRemoteURL'
       ? string | ForwardRequestReturnType<T>
       : void)
   | void
@@ -451,6 +452,8 @@ export type ExtraExtensionEventData<T extends ExtraExtensionEventTypes | unknown
   ? [playlists: Playlist[]]
   : T extends 'requestedSongFromId'
   ? [id: string]
+  : T extends 'getRemoteURL'
+  ? [song: Song]
   : never[]
 
 export type PlaylistReturnType = {
