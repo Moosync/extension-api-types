@@ -190,6 +190,10 @@ export type ExtensionPreferenceGroup = {
       type: 'TextField'
       default: string
     }
+  | {
+      type: 'InfoField'
+      default: string
+    }
 )
 
 export interface ExtensionFactory {
